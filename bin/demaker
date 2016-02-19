@@ -1,0 +1,78 @@
+#!/usr/bin/env php
+<?php
+
+require 'vendor/autoload.php';
+
+use DeSmart\DeMaker\Core\Command\DTO;
+use Symfony\Component\Console\Application;
+
+class Boot
+{
+    /**
+     * @var Application
+     */
+    protected $app;
+
+    public function __construct()
+    {
+        $this->app = new Application;
+    }
+
+    public function run()
+    {
+        $this->registerCommands();
+
+        $this->app->run();
+    }
+
+    public function registerCommands()
+    {
+        $commands = [new \DeSmart\DeMaker\Core\Command\Init()];
+
+        foreach($this->getAvailableCommands() as $command) {
+            if (class_exists($command['class'])) {
+                array_push($commands, new $command['class']);
+            }
+        }
+
+        $this->app->addCommands($commands);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAvailableCommands()
+    {
+        $config = $this->getConfig();
+
+        if (false === $this->assertConfigContainsAvailableCommands($config)) {
+            return [];
+        }
+
+        return $config['commands']['available'];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getConfig()
+    {
+        if (false === file_exists('demaker.json')) {
+            return [];
+        }
+
+        return json_decode(file_get_contents('demaker.json'), true);
+    }
+
+    /**
+     * @param $config
+     * @return bool
+     */
+    protected function assertConfigContainsAvailableCommands($config)
+    {
+        return true === isset($config['commands']) && true === isset($config['commands']['available']);
+    }
+}
+
+$boot = new Boot;
+$boot->run();
