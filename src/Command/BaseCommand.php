@@ -12,12 +12,8 @@ abstract class BaseCommand extends Command
 {
     protected function configure()
     {
-        $this->setDefinition(
-            new InputDefinition([
-                new InputArgument('fqn', InputArgument::REQUIRED, 'FQN of the class to be generated'),
-                new InputArgument('testfqn', InputArgument::REQUIRED, 'FQN of the test for the class to be generated'),
-            ])
-        );
+        $this->addArgument('fqn', InputArgument::REQUIRED, 'FQN of the class to be generated')
+            ->addArgument('testfqn', InputArgument::REQUIRED, 'FQN of the test for the class to be generated');
     }
 
     /**
