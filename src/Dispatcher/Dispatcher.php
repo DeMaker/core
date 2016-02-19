@@ -35,7 +35,7 @@ class Dispatcher
     }
 
     /**
-     * @return array
+     * @return DispatcherResponse[]
      */
     public function run()
     {
