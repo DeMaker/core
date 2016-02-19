@@ -5,7 +5,6 @@ namespace DeSmart\DeMaker\Core\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -14,10 +13,12 @@ abstract class BaseCommand extends Command
 {
     const ARGUMENT_FQN = 'fqn';
 
+    const ARGUMENT_TEST_FQN = 'testfqn';
+
     protected function configure()
     {
         $this->addArgument(self::ARGUMENT_FQN, InputArgument::REQUIRED, 'FQN of the class to be generated')
-            ->addArgument('testfqn', InputArgument::REQUIRED, 'FQN of the test for the class to be generated');
+            ->addArgument(self::ARGUMENT_TEST_FQN, InputArgument::REQUIRED, 'FQN of the test for the class to be generated');
     }
 
     /**
@@ -26,8 +27,8 @@ abstract class BaseCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $input->setArgument(self::ARGUMENT_FQN, $this->sanitizeFQN($input->getArgument('fqn')));
-        $input->setArgument('testfqn', $this->sanitizeFQN($input->getArgument('testfqn')));
+        $input->setArgument(self::ARGUMENT_FQN, $this->sanitizeFQN($input->getArgument(self::ARGUMENT_FQN)));
+        $input->setArgument(self::ARGUMENT_TEST_FQN, $this->sanitizeFQN($input->getArgument(self::ARGUMENT_TEST_FQN)));
     }
 
     /**
@@ -63,6 +64,7 @@ abstract class BaseCommand extends Command
         $helper = $this->getHelper('question');
 
         $this->askForFullyQualifiedName($input, $output, $helper);
+        $this->askForFullyQualifiedTestName($input, $output, $helper);
         $this->askForAdditionalInput($input, $output, $helper);
     }
 
@@ -83,6 +85,25 @@ abstract class BaseCommand extends Command
         $fqn = $helper->ask($input, $output, $question);
 
         $input->setArgument(self::ARGUMENT_FQN, $fqn);
+    }
+
+    /**
+     * Asks user for fully qualified name for generated class, if not provided as cli argument
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param QuestionHelper $helper
+     */
+    protected function askForFullyQualifiedTestName(InputInterface $input, OutputInterface $output, QuestionHelper $helper)
+    {
+        if (!empty($input->getArgument(self::ARGUMENT_TEST_FQN))) {
+            return;
+        }
+
+        $question = new Question('Enter the <info>fully qualified name</info> for the generated <info>test</info> class: ');
+        $testfqn = $helper->ask($input, $output, $question);
+
+        $input->setArgument(self::ARGUMENT_TEST_FQN, $testfqn);
     }
 
     /**
