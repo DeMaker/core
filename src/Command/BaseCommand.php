@@ -115,7 +115,6 @@ abstract class BaseCommand extends Command
      */
     protected function askForAdditionalInput(InputInterface $input, OutputInterface $output, QuestionHelper $helper)
     {
-
     }
 
     /**
