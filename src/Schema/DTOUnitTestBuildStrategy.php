@@ -30,6 +30,11 @@ class DTOUnitTestBuildStrategy implements BuildStrategyInterface
     protected $properties = [];
 
     /**
+     * @var int
+     */
+    protected $propertyIndex = 0;
+
+    /**
      * @param InputInterface $input
      */
     public function __construct(InputInterface $input)
@@ -57,7 +62,7 @@ class DTOUnitTestBuildStrategy implements BuildStrategyInterface
 
         $dtoUnitTest->addMethod($setUp);
 
-        $bodyElements = $this->handleMethodProperties($setUp, $dtoUnitTest);
+        $bodyElements = $this->handleMethodProperties($dtoUnitTest);
 
         $setUp->setBody(implode("\n", $bodyElements));
 
@@ -74,11 +79,10 @@ class DTOUnitTestBuildStrategy implements BuildStrategyInterface
     }
 
     /**
-     * @param Method $construct
-     * @param Object $dto
+     * @param Object $dtoUnitTest
      * @return array
      */
-    protected function handleMethodProperties(Method $setUp, Object $dtoUnitTest)
+    protected function handleMethodProperties(Object $dtoUnitTest)
     {
         $newProperty = new Property('dto');
         $newProperty->makePrivate();
@@ -90,38 +94,42 @@ class DTOUnitTestBuildStrategy implements BuildStrategyInterface
 
         $bodyElements = [];
         $bodyElements[] = "        \$this->dto = new \\{$this->testedClassFqn}(";
-        $propertyIndex = 0;
 
         foreach($this->properties as $property) {
-            $propertyIndex++;
-
-            list($propertyName, $propertyType) = $this->getPropertyDefinition($property);
-
-            $newProperty = new Property($propertyName);
-            $newProperty->makePrivate();
-            $newProperty->setPhpdoc(PropertyPhpdoc::make()
-                ->setVariableTag(new VariableTag($propertyType))
-            );
-
-            $dtoUnitTest->addProperty($newProperty);
-
-            $separator = ($propertyIndex < count($this->properties)) ? ',' : '';
-
-            $bodyElements[] = sprintf("            \$this->%s%s", $propertyName, $separator);
-
-            $newMethod = new Method(sprintf('get%sTest', ucfirst($propertyName)));
-            $newMethod->makePublic();
-            $newMethod->setPhpdoc(MethodPhpdoc::make()
-                ->setReturnTag(new ReturnTag($propertyType))
-            );
-            $getterName = sprintf('get%s', ucfirst($propertyName));
-            $newMethod->setBody("        \$this->assertSame(\$this->{$propertyName}, \$this->dto->{$getterName}());");
-
-            $dtoUnitTest->addMethod($newMethod);
+            $this->addTestElement($dtoUnitTest, $property);
         }
 
         $bodyElements[] = "        );";
 
         return $bodyElements;
+    }
+
+    protected function addTestElement(Object $dtoUnitTest, $property)
+    {
+        $this->propertyIndex++;
+
+        list($propertyName, $propertyType) = $this->getPropertyDefinition($property);
+
+        $newProperty = new Property($propertyName);
+        $newProperty->makePrivate();
+        $newProperty->setPhpdoc(PropertyPhpdoc::make()
+            ->setVariableTag(new VariableTag($propertyType))
+        );
+
+        $dtoUnitTest->addProperty($newProperty);
+
+        $separator = ($this->propertyIndex < count($this->properties)) ? ',' : '';
+
+        $bodyElements[] = sprintf("            \$this->%s%s", $propertyName, $separator);
+
+        $newMethod = new Method(sprintf('get%sTest', ucfirst($propertyName)));
+        $newMethod->makePublic();
+        $newMethod->setPhpdoc(MethodPhpdoc::make()
+            ->setReturnTag(new ReturnTag($propertyType))
+        );
+        $getterName = sprintf('get%s', ucfirst($propertyName));
+        $newMethod->setBody("        \$this->assertSame(\$this->{$propertyName}, \$this->dto->{$getterName}());");
+
+        $dtoUnitTest->addMethod($newMethod);
     }
 }
