@@ -1,0 +1,9 @@
+{
+    "commands": {
+        "available": [
+            {
+                "class": "\\DeSmart\\DeMaker\\Core\\Command\\DTO"
+            }
+        ]
+    }
+}
