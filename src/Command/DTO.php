@@ -20,7 +20,7 @@ class DTO extends BaseCommand
 
         $this->setName('dto')
             ->setDescription('Generate DTO class with given properties')
-            ->addOption('inputProperties', 'i', InputOption::VALUE_REQUIRED, 'Properties to generate (comma separated)');
+            ->addOption(self::OPTION_INPUT_PROPERTIES, 'i', InputOption::VALUE_REQUIRED, 'Properties to generate (comma separated)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
