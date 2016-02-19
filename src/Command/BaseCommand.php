@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BaseCommand extends Command
+abstract class BaseCommand extends Command
 {
     protected function configure()
     {
