@@ -1,0 +1,3 @@
+{% if 1 < variable_tag.type|split('\\')|length %}
+@var \{{ variable_tag.type }}{% else %}
+@var {{ variable_tag.type }}{% endif %}

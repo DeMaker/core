@@ -3,7 +3,6 @@
 
 require 'vendor/autoload.php';
 
-use DeSmart\DeMaker\Core\Command\DTO;
 use Symfony\Component\Console\Application;
 
 class Boot
