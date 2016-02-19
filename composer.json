@@ -25,14 +25,11 @@
     },
     "autoload": {
         "psr-4": {
-            "tests\\Foo\\" : "temp/tests/",
-            "Foo\\": "temp/src",
             "DeSmart\\DeMaker\\Core\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-
             "tests\\": "tests/"
         },
         "classmap": [
