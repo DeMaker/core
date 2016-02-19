@@ -36,6 +36,6 @@ class BaseCommand extends Command
      */
     protected function sanitizeFQN($fqn)
     {
-        return ltrim($fqn, '\\');
+        return preg_replace(["#^(\\\\+)#", "#\\\\{2,}#"], ["", "\\"], $fqn);
     }
 }
