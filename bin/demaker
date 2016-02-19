@@ -45,7 +45,7 @@ class Boot
     {
         $config = $this->getConfig();
 
-        if (true === $this->assertConfigContainsAvailableCommands($config)) {
+        if (false === $this->assertConfigContainsAvailableCommands($config)) {
             return [];
         }
 
@@ -70,7 +70,7 @@ class Boot
      */
     protected function assertConfigContainsAvailableCommands($config)
     {
-        return false === isset($config['commands']) || false === isset($config['commands']['available']);
+        return true === isset($config['commands']) && true === isset($config['commands']['available']);
     }
 }
 
