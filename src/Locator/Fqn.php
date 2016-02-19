@@ -25,7 +25,9 @@ class Fqn
         $fqnArray = explode('\\', $fqn);
         $this->sources = $sources;
         $this->className = array_pop($fqnArray);
-        $this->fqnArray = $fqnArray;
+        $this->fqnArray = array_filter($fqnArray, function ($fqnpart) {
+            return true !== empty($fqnpart);
+        });
     }
 
     /**
